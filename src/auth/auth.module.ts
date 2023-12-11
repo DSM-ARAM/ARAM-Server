@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './model/user.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer'
 import { ConfigService } from '@nestjs/config';
 
 @Module({
@@ -22,7 +23,17 @@ import { ConfigService } from '@nestjs/config';
                     complete: false
                 }
             })
-        })
+        }),
+        MailerModule.forRoot({
+            transport: {
+                host: 'smtp.gmail.com',
+                port: 587,
+                auth: {
+                    user: process.env.EMAIL_ID,
+                    pass: process.env.EMAIL_PASSWORD
+                }
+            },
+        }),
     ],
     providers: [
         AuthService

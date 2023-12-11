@@ -1,13 +1,17 @@
-import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SignInRequest, SignUpRequest } from './dto/request';
+import { EmailAuthRequest, SignInRequest, SignUpRequest } from './dto/request';
 import { UserEntity } from './model/user.entity';
 import * as bcrypt from 'bcrypt';
 import { configDotenv } from 'dotenv';
-import { SignInResponse, token } from './dto/response';
+import { token } from './dto/response';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config'
+import { MailerService } from '@nestjs-modules/mailer';
+import { setTimeout } from 'timers';
+import { Redis } from 'ioredis';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
 
 configDotenv()
 
@@ -16,11 +20,15 @@ export class AuthService {
     constructor(
         @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
         private jwtService: JwtService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private mailerService: MailerService,
+        @InjectRedis() private readonly redis: Redis
     ) {
         this.userRepository = userRepository
         this.jwtService = jwtService
         this.configService = configService
+        this.mailerService = mailerService
+        this.redis = redis
     }
 
     /** 회원가입 */
@@ -80,5 +88,47 @@ export class AuthService {
         return this.jwtService.sign(payload, {
             secret: this.configService.get<string>('process.env.SECRET_REFRESH'),
         })
+    }
+
+    /** 이메일 인증 */
+    async emailAuth(request: EmailAuthRequest): Promise<null>{
+        const { userEmail } = request
+
+        configDotenv()
+
+        const verifyCode: string | symbol = (Math.floor(Math.random() * 88889)).toString().padStart(6, '0')
+        await this.redis.set(userEmail, verifyCode)
+
+        const mailhtml = `
+            <div id="mainvox" style="font-family: Pretendard; width:500px;">
+                <h1 style="font-family: Pretendard; margin-bottom: 8px; font-size: 32px">인증 번호</h1>
+                <div> 이메일 인증을 위한 인증 번호입니다. 아래 번호는 5분 뒤 만료됩니다.
+                    <h3 style="background-color: #ededed; padding: 24px; font-size: 36px; letter-spacing: 12px; border-radius: 8px;">
+                        ${verifyCode}
+                    </h3>
+                    직접 인증을 요청한 적이 없다면 개인정보가 도용되었을 수 있습니다. 
+                    비밀번호 변경이 권장됩니다.
+                </div>
+            </div>
+        `
+
+        await this.mailerService.sendMail({
+            from: process.env.EMAIL_ID,
+            to: userEmail,
+            text: '인증 코드 테스팅',
+            subject: '[ARAM] 인증 메일입니다.',
+            html: mailhtml
+        })
+            .then(res => {
+                setTimeout(async () => {
+                    await this.redis.set(userEmail, null)
+                }, 1000 * 60 * 5)
+            })
+            .catch(err => {
+                console.error(err)
+                throw new BadRequestException()
+            })
+
+        return null
     }
 }

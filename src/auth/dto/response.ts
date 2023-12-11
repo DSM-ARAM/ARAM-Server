@@ -37,9 +37,23 @@ type token = {
     refreshtoken: string
 }
 
+class EmailResponse extends ResponseStructure {
+    constructor(
+        data: null,
+        statusCode: number,
+        statusMsg: string
+    ) {
+        super(statusCode, statusMsg)
+        this.data = data
+    }
+
+    data: null
+}
+
 export {
     ResponseStructure,
     ResStruct,
     SignInResponse,
-    token
+    token,
+    EmailResponse
 }

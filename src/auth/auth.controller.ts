@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInRequest, SignUpRequest } from './dto/request';
-import { ResStruct, SignInResponse, token } from './dto/response';
+import { SignInRequest, SignUpRequest, EmailAuthRequest } from './dto/request';
+import { EmailResponse, ResStruct, SignInResponse, token } from './dto/response';
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +30,17 @@ export class AuthController {
             data,
             statusCode: 201,
             statusMsg: '로그인 성공'
+        }
+    }
+    
+    @Post('/email')
+    async email(@Body() request: EmailAuthRequest): Promise<EmailResponse>{
+        const data = await this.authService.emailAuth(request)
+
+        return {
+            data,
+            statusCode: 200,
+            statusMsg: '인증 메일 발송 완료',
         }
     }
 }

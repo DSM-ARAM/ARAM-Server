@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
+import { Contains, IsEmail } from "@nestjs/class-validator"
 
 class SignUpRequest {
     constructor(
@@ -51,6 +52,8 @@ class SignInRequest{
         example: "asdf@dsm.hs.kr",
         description: "로그인할 하나의 이메일"
     })
+    @IsEmail()
+    @Contains('@dsm.hs.kr')
     userEmail: string
 
     @ApiProperty({
@@ -60,7 +63,24 @@ class SignInRequest{
     userPassword: string
 }
 
+class EmailAuthRequest {
+    constructor(
+        userEmail: string
+    ) {
+        this.userEmail = userEmail
+    }
+
+    @ApiProperty({
+        example: "asdf@dsm.hs.kr",
+        description: ""
+    })
+    @IsEmail()
+    @Contains('@dsm.hs.kr')
+    userEmail: string
+}
+
 export {
     SignUpRequest,
-    SignInRequest
+    SignInRequest,
+    EmailAuthRequest
 }
