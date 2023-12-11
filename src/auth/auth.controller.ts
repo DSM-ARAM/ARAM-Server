@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInRequest, SignUpRequest, EmailAuthRequest } from './dto/request';
+import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest } from './dto/request';
 import { EmailResponse, ResStruct, SignInResponse, token } from './dto/response';
 
 @Controller('auth')
@@ -41,6 +41,17 @@ export class AuthController {
             data,
             statusCode: 200,
             statusMsg: '인증 메일 발송 완료',
+        }
+    }
+
+    @Post('/code')
+    async verifyingCode(@Body() request: VerifyingCodeRequest): Promise<EmailResponse> {
+        const data = await this.authService.verifyingCode(request)
+
+        return {
+            data,
+            statusCode: 200,
+            statusMsg: '코드 확인 완료'
         }
     }
 }

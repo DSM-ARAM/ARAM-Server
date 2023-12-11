@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EmailAuthRequest, SignInRequest, SignUpRequest } from './dto/request';
+import { EmailAuthRequest, SignInRequest, SignUpRequest, VerifyingCodeRequest } from './dto/request';
 import { UserEntity } from './model/user.entity';
 import * as bcrypt from 'bcrypt';
 import { configDotenv } from 'dotenv';
@@ -130,5 +130,18 @@ export class AuthService {
             })
 
         return null
+    }
+
+    /** 인증 코드 확인 */
+    async verifyingCode(request: VerifyingCodeRequest): Promise<string> {
+        const { userEmail, verifyCode } = request
+
+        const thisCode = await this.redis.get(userEmail)
+
+        if (verifyCode !== thisCode) throw new ConflictException('코드 불일치')
+        else {
+            await this.redis.set(userEmail, null)
+            return userEmail
+        }
     }
 }

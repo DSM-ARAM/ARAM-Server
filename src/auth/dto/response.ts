@@ -39,7 +39,7 @@ type token = {
 
 class EmailResponse extends ResponseStructure {
     constructor(
-        data: null,
+        data: string,
         statusCode: number,
         statusMsg: string
     ) {
@@ -47,7 +47,7 @@ class EmailResponse extends ResponseStructure {
         this.data = data
     }
 
-    data: null
+    data: string
 }
 
 export {

@@ -79,8 +79,31 @@ class EmailAuthRequest {
     userEmail: string
 }
 
+class VerifyingCodeRequest {
+    constructor(
+        userEmail: string,
+        verifyCode: string
+    ) {
+        this.userEmail = userEmail
+        this.verifyCode = verifyCode
+    }
+
+    @ApiProperty({
+        example: 'asdf@dsm.hs.kr',
+        description: '회원가입 시 입력한 이메일'
+    })
+    userEmail: string
+
+    @ApiProperty({
+        example: '012345',
+        description: '메일로 발송된 인증 코드'
+    })
+    verifyCode: string
+}
+
 export {
     SignUpRequest,
     SignInRequest,
-    EmailAuthRequest
+    EmailAuthRequest,
+    VerifyingCodeRequest
 }
