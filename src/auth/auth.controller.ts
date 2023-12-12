@@ -1,7 +1,7 @@
-import { Body, Controller, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, Patch, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest, FindPasswordRequest } from './dto/request';
-import { EmailResponse, FindPasswordResponse, ResStruct, SignInResponse, token } from './dto/response';
+import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest, FindPasswordRequest, ModifyPasswordRequest } from './dto/request';
+import { EmailResponse, FindPasswordResponse, ModifyPasswordResponse, ResStruct, SignInResponse, token } from './dto/response';
 
 @Controller('auth')
 export class AuthController {
@@ -63,6 +63,30 @@ export class AuthController {
             data,
             statusCode: 200,
             statusMsg: '비밀번호 수정 완료'
+        }
+    }
+
+    @Patch('/mod')
+    async modifyPassword(
+        @Headers('authorization') accesstoken: string,
+        @Body() request: ModifyPasswordRequest): Promise<ModifyPasswordResponse>{
+        const data = await this.authService.modifyPassword(accesstoken, request)
+        
+        return {
+            data,
+            statusCode: 200,
+            statusMsg: '비밀번호 수정 완료'
+        }
+    }
+
+    @Get('/verify')
+    async verifyRefresh(@Headers('authorization') refreshtoken: string): Promise<SignInResponse> {
+        const data = await this.authService.validateRefresh(refreshtoken)
+
+        return {
+            data,
+            statusCode: 200,
+            statusMsg: '토큰 갱신 완료'
         }
     }
 }

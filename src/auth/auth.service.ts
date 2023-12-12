@@ -1,11 +1,11 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EmailAuthRequest, FindPasswordRequest, SignInRequest, SignUpRequest, VerifyingCodeRequest } from './dto/request';
+import { EmailAuthRequest, FindPasswordRequest, ModifyPasswordRequest, SignInRequest, SignUpRequest, VerifyingCodeRequest } from './dto/request';
 import { UserEntity } from './model/user.entity';
 import * as bcrypt from 'bcrypt';
 import { configDotenv } from 'dotenv';
-import { FindPasswordResponse, token } from './dto/response';
+import { FindPasswordResponse, token, ValidateTokenResponse } from './dto/response';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config'
 import { MailerService } from '@nestjs-modules/mailer';
@@ -22,7 +22,7 @@ export class AuthService {
         private jwtService: JwtService,
         private configService: ConfigService,
         private mailerService: MailerService,
-        @InjectRedis() private readonly redis: Redis
+        @InjectRedis() private readonly redis: Redis,
     ) {
         this.userRepository = userRepository
         this.jwtService = jwtService
@@ -85,8 +85,9 @@ export class AuthService {
         const payload = {
             userId : userId
         }
-        return this.jwtService.sign(payload, {
+        return this.jwtService.signAsync(payload, {
             secret: this.configService.get<string>('process.env.SECRET_REFRESH'),
+            expiresIn: '10d'
         })
     }
 
@@ -162,5 +163,42 @@ export class AuthService {
         })
 
         return userEmail
+    }
+
+    /** 비밀번호 수정 */
+    async modifyPassword(accesstoken: string, request: ModifyPasswordRequest): Promise<null> {
+        const { userId } = await this.validateAccess(accesstoken)
+        const { newPassword } = request 
+
+        const salt = bcrypt.genSaltSync(Number(process.env.SALTROUNDS))
+        const userPassword = bcrypt.hashSync(newPassword, salt)
+
+        await this.userRepository.update({ userId }, { userPassword })
+
+        return null
+    }
+
+    /** 액세스토큰 인증 */
+    async validateAccess(accesstoken: string): Promise<null | ValidateTokenResponse> {
+        const access: ValidateTokenResponse = await this.jwtService.verifyAsync(accesstoken.split(' ')[1], {
+            secret: this.configService.get<string>('process.env.SECRET_ACCESS')
+        })
+        if (!access) return null
+        
+        return access
+    }
+
+    /** 리프레시 토큰 인증 */
+    async validateRefresh(refreshtoken: string): Promise<null | token> {
+        const refresh: ValidateTokenResponse = await this.jwtService.verify(refreshtoken.split(' ')[1], {
+            secret: this.configService.get<string>('process.env.SECRET_REFRESH')
+        })
+        const accesstoken = await this.generateAccess(refresh.userId)
+        if (!refresh) return null
+        
+        return {
+            accesstoken,
+            refreshtoken: refreshtoken.split(' ')[1]
+        }
     }
 }

@@ -63,11 +63,30 @@ class FindPasswordResponse extends ResponseStructure {
     data: string
 }
 
+type ValidateTokenResponse = {
+    userId: number
+}
+
+class ModifyPasswordResponse extends ResponseStructure {
+    constructor(
+        data: string,
+        statusCode: number,
+        statusMsg: string
+    ) {
+        super(statusCode, statusMsg)
+        this.data = data
+    }
+
+    data: string
+}
+
 export {
     ResponseStructure,
     ResStruct,
     SignInResponse,
     token,
     EmailResponse,
-    FindPasswordResponse
+    FindPasswordResponse,
+    ValidateTokenResponse,
+    ModifyPasswordResponse
 }

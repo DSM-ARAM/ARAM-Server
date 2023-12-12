@@ -123,10 +123,25 @@ class FindPasswordRequest {
     newPassword: string
 }
 
+class ModifyPasswordRequest {
+    constructor(
+        newPassword: string
+    ) {
+        this.newPassword = newPassword
+    }
+
+    @ApiProperty({
+        example: 'qwer1234!',
+        description: '새로 설정할 비밀번호'
+    })
+    newPassword: string
+}
+
 export {
     SignUpRequest,
     SignInRequest,
     EmailAuthRequest,
     VerifyingCodeRequest,
-    FindPasswordRequest
+    FindPasswordRequest,
+    ModifyPasswordRequest,
 }
