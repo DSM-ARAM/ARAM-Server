@@ -5,7 +5,7 @@ import { EmailAuthRequest, FindPasswordRequest, ModifyPasswordRequest, SignInReq
 import { UserEntity } from './model/user.entity';
 import * as bcrypt from 'bcrypt';
 import { configDotenv } from 'dotenv';
-import { FindPasswordResponse, token, ValidateTokenResponse } from './dto/response';
+import { GetUserInfoServiceResponse, token, ValidateTokenResponse } from './dto/response';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config'
 import { MailerService } from '@nestjs-modules/mailer';
@@ -199,6 +199,17 @@ export class AuthService {
         return {
             accesstoken,
             refreshtoken: refreshtoken.split(' ')[1]
+        }
+    }
+
+    /** 유저 정보 조회 */
+    async getUserInfo(accesstoken: string): Promise<GetUserInfoServiceResponse> {
+        const { userId } = await this.validateAccess(accesstoken)
+        const thisUser = await this.userRepository.findOneBy({ userId })
+
+        return {
+            userName: thisUser.userName,
+            userDepartment: thisUser.userDepartment
         }
     }
 }

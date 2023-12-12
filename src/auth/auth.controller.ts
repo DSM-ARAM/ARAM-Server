@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Header, Headers, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Header, Headers, HttpCode, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest, FindPasswordRequest, ModifyPasswordRequest } from './dto/request';
-import { EmailResponse, FindPasswordResponse, ModifyPasswordResponse, ResStruct, SignInResponse, token } from './dto/response';
+import { EmailResponse, FindPasswordResponse, GetUserInfoResponse, ModifyPasswordResponse, ResStruct, SignInResponse, token } from './dto/response';
 
 @Controller('auth')
 export class AuthController {
@@ -44,6 +44,7 @@ export class AuthController {
         }
     }
 
+    @HttpCode(200)
     @Post('/code')
     async verifyingCode(@Body() request: VerifyingCodeRequest): Promise<EmailResponse> {
         const data = await this.authService.verifyingCode(request)
@@ -87,6 +88,17 @@ export class AuthController {
             data,
             statusCode: 200,
             statusMsg: '토큰 갱신 완료'
+        }
+    }
+
+    @Get('/usr')
+    async getUserInfo(@Headers('authorization') accesstoken: string): Promise<GetUserInfoResponse> {
+        const data = await this.authService.getUserInfo(accesstoken)
+
+        return {
+            data,
+            statusCode: 200,
+            statusMsg: '유저 정보 조회 완료'
         }
     }
 }

@@ -80,6 +80,32 @@ class ModifyPasswordResponse extends ResponseStructure {
     data: string
 }
 
+class GetUserInfoServiceResponse {
+    constructor(
+        userName: string,
+        userDepartment: string
+    ) {
+        this.userName = userName
+        this.userDepartment = userDepartment
+    }
+
+    userName: string
+    userDepartment: string
+}
+
+class GetUserInfoResponse extends ResponseStructure {
+    constructor(
+        data: GetUserInfoServiceResponse,
+        statusCode: number,
+        statusMsg: string
+    ) {
+        super(statusCode, statusMsg)
+        this.data = data
+    }
+
+    data: GetUserInfoServiceResponse
+}
+
 export {
     ResponseStructure,
     ResStruct,
@@ -88,5 +114,7 @@ export {
     EmailResponse,
     FindPasswordResponse,
     ValidateTokenResponse,
-    ModifyPasswordResponse
+    ModifyPasswordResponse,
+    GetUserInfoServiceResponse,
+    GetUserInfoResponse
 }
