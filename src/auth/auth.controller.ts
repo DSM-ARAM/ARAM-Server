@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Header, Headers, HttpCode, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest, FindPasswordRequest, ModifyPasswordRequest } from './dto/request';
-import { EmailResponse, FindPasswordResponse, GetUserInfoResponse, ModifyPasswordResponse, ResStruct, SignInResponse, token } from './dto/response';
+import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest, FindPasswordRequest, ModifyPasswordRequest, ModifyUserInfoRequest } from './dto/request';
+import { EmailResponse, FindPasswordResponse, GetUserInfoResponse, ModifyPasswordResponse, ModifyUserInfoResponse, ResStruct, SignInResponse, token } from './dto/response';
 
 @Controller('auth')
 export class AuthController {
@@ -99,6 +99,20 @@ export class AuthController {
             data,
             statusCode: 200,
             statusMsg: '유저 정보 조회 완료'
+        }
+    }
+
+    @Patch('/usr')
+    async modifyUserInfo(
+        @Headers('authorization') accesstoken: string,
+        @Body() request: ModifyUserInfoRequest
+    ): Promise<ModifyUserInfoResponse> {
+        const data = await this.authService.modifiUserInfo(accesstoken, request)
+
+        return {
+            data,
+            statusCode: 200,
+            statusMsg: '정보 수정 완료'
         }
     }
 }

@@ -1,11 +1,11 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EmailAuthRequest, FindPasswordRequest, ModifyPasswordRequest, SignInRequest, SignUpRequest, VerifyingCodeRequest } from './dto/request';
+import { EmailAuthRequest, FindPasswordRequest, ModifyPasswordRequest, ModifyUserInfoRequest, SignInRequest, SignUpRequest, VerifyingCodeRequest } from './dto/request';
 import { UserEntity } from './model/user.entity';
 import * as bcrypt from 'bcrypt';
 import { configDotenv } from 'dotenv';
-import { GetUserInfoServiceResponse, token, ValidateTokenResponse } from './dto/response';
+import { GetUserInfoServiceResponse, ModifiedUserInfoResponse, token, ValidateTokenResponse } from './dto/response';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config'
 import { MailerService } from '@nestjs-modules/mailer';
@@ -210,6 +210,30 @@ export class AuthService {
         return {
             userName: thisUser.userName,
             userDepartment: thisUser.userDepartment
+        }
+    }
+
+    /** 유저 정보 수정 */
+    async modifiUserInfo(accesstoken: string, request: ModifyUserInfoRequest): Promise<ModifiedUserInfoResponse> {
+        const { userId } = await this.validateAccess(accesstoken)
+        const thisUser = await this.userRepository.findOneBy({ userId })
+        
+        const userName = request.userName ?? thisUser.userName
+        const userDepartment = request.userDepartment ?? thisUser.userDepartment
+        
+        await this.userRepository.update({
+            userId
+        }, {
+            userName, 
+            userDepartment
+        })
+
+        const modifiedUser = await this.userRepository.findOneBy({ userId })
+
+        return {
+            userId,
+            userName: modifiedUser.userName,
+            userDepartment: modifiedUser.userDepartment
         }
     }
 }

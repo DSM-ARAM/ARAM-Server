@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
-import { Contains, IsEmail } from "@nestjs/class-validator"
+import { Contains, IsEmail, IsOptional } from "@nestjs/class-validator"
 
 class SignUpRequest {
     constructor(
@@ -72,7 +72,7 @@ class EmailAuthRequest {
 
     @ApiProperty({
         example: "asdf@dsm.hs.kr",
-        description: ""
+        description: "인증에 사용할 이메일 주소"
     })
     @IsEmail()
     @Contains('@dsm.hs.kr')
@@ -137,6 +137,30 @@ class ModifyPasswordRequest {
     newPassword: string
 }
 
+class ModifyUserInfoRequest {
+    constructor(
+        userName: string | null,
+        userDepartment: string | null
+    ) {
+        this.userName = userName
+        this.userDepartment = userDepartment
+    }
+
+    @ApiProperty({
+        example: '홍길동',
+        description: '수정하고 싶은 사용자명'
+    })
+    @IsOptional()
+    userName?: string
+
+    @ApiProperty({
+        example: '가나다라부',
+        description: '소속된 부서명'
+    })
+    @IsOptional()
+    userDepartment?: string
+}
+
 export {
     SignUpRequest,
     SignInRequest,
@@ -144,4 +168,5 @@ export {
     VerifyingCodeRequest,
     FindPasswordRequest,
     ModifyPasswordRequest,
+    ModifyUserInfoRequest
 }

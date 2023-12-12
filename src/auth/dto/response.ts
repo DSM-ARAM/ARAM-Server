@@ -106,6 +106,25 @@ class GetUserInfoResponse extends ResponseStructure {
     data: GetUserInfoServiceResponse
 }
 
+class ModifyUserInfoResponse extends ResponseStructure {
+    constructor(
+        data: ModifiedUserInfoResponse,
+        statusCode: number,
+        statusMsg: string
+    ) {
+        super(statusCode, statusMsg)
+        this.data = data
+    }
+
+    data: ModifiedUserInfoResponse
+}
+
+type ModifiedUserInfoResponse = {
+    userId: number,
+    userName: string,
+    userDepartment: string
+}
+
 export {
     ResponseStructure,
     ResStruct,
@@ -116,5 +135,7 @@ export {
     ValidateTokenResponse,
     ModifyPasswordResponse,
     GetUserInfoServiceResponse,
-    GetUserInfoResponse
+    GetUserInfoResponse,
+    ModifyUserInfoResponse,
+    ModifiedUserInfoResponse
 }
