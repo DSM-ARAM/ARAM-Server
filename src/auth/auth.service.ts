@@ -59,7 +59,7 @@ export class AuthService {
         const user = await this.userRepository.findOneBy({ userEmail })
         if (!user) throw new NotFoundException('존재하지 않는 계정 이메일')
         
-        if(!bcrypt.compareSync(userPassword, user.userPassword)) throw new UnauthorizedException('비밀번호 불일치')
+        if(!bcrypt.compareSync(userPassword, user.userPassword)) throw new ConflictException('비밀번호 불일치')
 
         const accesstoken = await this.generateAccess(user.userId)
         const refreshtoken = await this.generateRefresh(user.userId)
@@ -207,6 +207,8 @@ export class AuthService {
         const { userId } = await this.validateAccess(accesstoken)
         const thisUser = await this.userRepository.findOneBy({ userId })
 
+        if (!thisUser) throw new NotFoundException('존재하지 않는 유저')
+
         return {
             userName: thisUser.userName,
             userDepartment: thisUser.userDepartment
@@ -217,6 +219,8 @@ export class AuthService {
     async modifiUserInfo(accesstoken: string, request: ModifyUserInfoRequest): Promise<ModifiedUserInfoResponse> {
         const { userId } = await this.validateAccess(accesstoken)
         const thisUser = await this.userRepository.findOneBy({ userId })
+
+        if(!thisUser) throw new NotFoundException('존재하지 않는 유저')
         
         const userName = request.userName ?? thisUser.userName
         const userDepartment = request.userDepartment ?? thisUser.userDepartment

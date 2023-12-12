@@ -11,10 +11,17 @@ class ResponseStructure {
     statusMsg: string
 }
 
-type ResStruct = {
-    data: any
-    statusCode: number
-    statusMsg: string
+class SignUpResponse extends ResponseStructure {
+    constructor(
+        data: null,
+        statusCode: number,
+        statusMsg: string
+    ) {
+        super(statusCode, statusMsg)
+        this.data = data
+    }
+    
+    data: null
 }
 
 class SignInResponse extends ResponseStructure {
@@ -127,7 +134,7 @@ type ModifiedUserInfoResponse = {
 
 export {
     ResponseStructure,
-    ResStruct,
+    SignUpResponse,
     SignInResponse,
     token,
     EmailResponse,
