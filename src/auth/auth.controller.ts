@@ -1,7 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Patch, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest } from './dto/request';
-import { EmailResponse, ResStruct, SignInResponse, token } from './dto/response';
+import { SignInRequest, SignUpRequest, EmailAuthRequest, VerifyingCodeRequest, FindPasswordRequest } from './dto/request';
+import { EmailResponse, FindPasswordResponse, ResStruct, SignInResponse, token } from './dto/response';
 
 @Controller('auth')
 export class AuthController {
@@ -52,6 +52,17 @@ export class AuthController {
             data,
             statusCode: 200,
             statusMsg: '코드 확인 완료'
+        }
+    }
+
+    @Patch('/find')
+    async findPassword(@Body() request: FindPasswordRequest): Promise<FindPasswordResponse> {
+        const data = await this.authService.findPassword(request)
+
+        return {
+            data,
+            statusCode: 200,
+            statusMsg: '비밀번호 수정 완료'
         }
     }
 }

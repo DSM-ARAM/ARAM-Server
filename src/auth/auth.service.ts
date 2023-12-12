@@ -1,11 +1,11 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EmailAuthRequest, SignInRequest, SignUpRequest, VerifyingCodeRequest } from './dto/request';
+import { EmailAuthRequest, FindPasswordRequest, SignInRequest, SignUpRequest, VerifyingCodeRequest } from './dto/request';
 import { UserEntity } from './model/user.entity';
 import * as bcrypt from 'bcrypt';
 import { configDotenv } from 'dotenv';
-import { token } from './dto/response';
+import { FindPasswordResponse, token } from './dto/response';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config'
 import { MailerService } from '@nestjs-modules/mailer';
@@ -143,5 +143,24 @@ export class AuthService {
             await this.redis.set(userEmail, null)
             return userEmail
         }
+    }
+
+    /** 비밀번호 찾기 */
+    async findPassword(request: FindPasswordRequest): Promise<string> {
+        const { userEmail, newPassword } = request
+
+        const thisUser = await this.userRepository.findOneBy({ userEmail })
+        if (!thisUser) throw new NotFoundException('존재하지 않는 유저')
+        
+        const salt = bcrypt.genSaltSync(Number(process.env.SALTROUNDS))
+        const hash = bcrypt.hashSync(newPassword, salt)
+
+        await this.userRepository.update({
+            userId: thisUser.userId
+        }, {
+            userPassword: hash
+        })
+
+        return userEmail
     }
 }

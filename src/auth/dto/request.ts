@@ -101,9 +101,32 @@ class VerifyingCodeRequest {
     verifyCode: string
 }
 
+class FindPasswordRequest {
+    constructor(
+        userEmail: string,
+        newPassword: string
+    ) {
+        this.userEmail = userEmail
+        this.newPassword = newPassword
+    }
+
+    @ApiProperty({
+        example: 'asdf@dsm.hs.kr',
+        description: '회원가입 시 사용한 이메일 주소'
+    })
+    userEmail: string
+
+    @ApiProperty({
+        example: 'qawsedrf1234!',
+        description: '새로 설정할 비밀번호'
+    })
+    newPassword: string
+}
+
 export {
     SignUpRequest,
     SignInRequest,
     EmailAuthRequest,
-    VerifyingCodeRequest
+    VerifyingCodeRequest,
+    FindPasswordRequest
 }

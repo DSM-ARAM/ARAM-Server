@@ -50,10 +50,24 @@ class EmailResponse extends ResponseStructure {
     data: string
 }
 
+class FindPasswordResponse extends ResponseStructure {
+    constructor(
+        data: string,
+        statusCode: number,
+        statusMsg: string
+    ) {
+        super(statusCode, statusMsg)
+        this.data = data
+    }
+
+    data: string
+}
+
 export {
     ResponseStructure,
     ResStruct,
     SignInResponse,
     token,
-    EmailResponse
+    EmailResponse,
+    FindPasswordResponse
 }
