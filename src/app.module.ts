@@ -7,7 +7,9 @@ import { ConfigModule } from '@nestjs/config'
     imports: [
         ConfigModule.forRoot({
             cache: true,
-            isGlobal: true
+            isGlobal: true,
+            envFilePath: process.env.NODE_ENV === 'prod' ? '.env.prod' 
+                : process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.local'
         }),
         TypeOrmModule.forRoot({
             type: 'mysql',
