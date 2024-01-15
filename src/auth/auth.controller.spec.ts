@@ -1,36 +1,18 @@
-/*
 import { Test, TestingModule } from '@nestjs/testing';
-import { Request, Response } from 'express';
 import { AuthController } from './auth.controller';
 
-mockAuthControllerRequest: () => {
-	let req: Request
-	req.body = jest.fn().mockReturnValue(req)
-	return req
-}
-
-mockAuthControllerResponse: () => {
-	let res: Response
-	res.send = jest.fn().mockReturnValue(res)
-	res.status = jest.fn().mockReturnValue(res)
-	res.json = jest.fn().mockReturnValue(res)
-	return res
-}
-
 describe('AuthController', () => {
-	let controller: AuthController;
+  let controller: AuthController;
 
-	beforeEach(async () => {
-		const module: TestingModule = await Test.createTestingModule({
-			controllers: [
-			],
-		}).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [AuthController],
+    }).compile();
 
-		controller = module.get<AuthController>(AuthController);
-	});
+    controller = module.get<AuthController>(AuthController);
+  });
 
-	it('회원가입', () => {
-		expect(controller).toBeDefined();
-	});
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
 });
-*/

@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { RedisModule } from '@liaoliaots/nestjs-redis'
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
     imports: [
@@ -22,17 +21,6 @@ import { RedisModule } from '@liaoliaots/nestjs-redis'
             synchronize: true,
             autoLoadEntities: false,
             timezone: 'z'
-        }),
-        RedisModule.forRootAsync({
-            inject: [ConfigService],
-            useFactory: (config: ConfigService) => ({
-                readyLog: true,
-                config: {
-                    host: process.env.REDIS_HOST,
-                    port: config.get<number>(process.env.REDIS_PORT),
-                    password: process.env.REDIS_PASSWORD
-                }
-            })
         }),
         AuthModule
     ],
