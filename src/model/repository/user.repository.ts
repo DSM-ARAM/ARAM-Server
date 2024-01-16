@@ -9,4 +9,8 @@ export class UserRepository {
     constructor(private readonly dataSource: DataSource) {
         this.userRepository = this.dataSource.getRepository(UserEntity);
     }
+
+    async findUserByEmail(email: string): Promise<UserEntity> {
+        return await this.userRepository.findOneBy({ email });
+    }
 }

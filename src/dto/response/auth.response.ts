@@ -1,7 +1,14 @@
-import { BaseResponse } from "./response";
+import { BaseResponse } from "../response/response";
 
-export class SignUpResponse implements BaseResponse {
-    data: null
-    statusCode: 201
-    statusMsg: "회원가입 완료"
+export class SignInResponse implements BaseResponse {
+    data: SignInDataResponse;
+    statusCode: number;
+    statusMsg: string;
+}
+
+export class SignInDataResponse {
+    accesstoken: string;
+    refreshtoken: string;
+    accessExpiredAt: string;
+    refreshExpiredAt: string;
 }
