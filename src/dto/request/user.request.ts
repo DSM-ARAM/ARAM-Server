@@ -1,6 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString, Matches, MaxLength, MinLength } from "@nestjs/class-validator"
-import { isRegExp } from "util/types";
 
 export class SignUpRequest {
     @ApiProperty({

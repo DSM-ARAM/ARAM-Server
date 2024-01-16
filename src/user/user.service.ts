@@ -3,8 +3,6 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/model/entity/user.entity';
 import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { MailerService } from '@nestjs-modules/mailer';
 import { genSaltSync, hashSync } from 'bcrypt';
 import { SignUpRequest } from 'src/dto/request/user.request';
 
