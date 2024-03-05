@@ -6,7 +6,7 @@ import { WINSTON_MODULE_NEST_PROVIDER, WinstonModule } from 'nest-winston';
 import { CorsOptions } from './utils/corsOptions.util';
 import { WinstonOptions, levAndColor } from './utils/winston.options.util';
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
-import winston, { format } from 'winston';
+import winston from 'winston';
 
 const port = process.env.PORT ?? 8000;
 
